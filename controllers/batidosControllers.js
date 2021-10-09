@@ -10,6 +10,25 @@ module.exports = {
       next(error);
     }
   },
+  getAllPaginate: async function (req, res, next) {
+    try {
+      let queryFind = {};
+      if (req.query.buscar) {
+        queryFind = {
+          name: { $regex: ".*" + req.query.buscar + ".*", $options: "i" },
+        };
+      }
+      const batidos = await batidosModel.paginate(queryFind, {
+        sort: { title: 1 },
+        populate: "categoria",
+        limit: req.query.limit || 2,
+        page: req.query.page || 1,
+      });
+      res.json(batidos);
+    } catch (error) {
+      next(error);
+    }
+  },
   getById: async function (req, res, next) {
     try {
       const { id } = req.params;

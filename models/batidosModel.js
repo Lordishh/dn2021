@@ -18,4 +18,5 @@ const batidosSchema = new mongoose.Schema({
   },
 });
 
+batidosSchema.plugin(mongoose.mongoosePaginate);
 module.exports = mongoose.model("batidos", batidosSchema);

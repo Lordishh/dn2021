@@ -1,11 +1,30 @@
-const batidosModel = require("../models/batidosModel");
+const productosModel = require("../models/productosModel");
 const categoriasModel = require("../models/categoriasModel");
 
 module.exports = {
   getAll: async function (req, res, next) {
     try {
-      const batidos = await batidosModel.find().populate("categoria");
-      res.json(batidos);
+      const productos = await productosModel.find().populate("categoria");
+      res.json(productos);
+    } catch (error) {
+      next(error);
+    }
+  },
+  getAllPaginate: async function (req, res, next) {
+    try {
+      let queryFind = {};
+      if (req.query.buscar) {
+        queryFind = {
+          name: { $regex: ".*" + req.query.buscar + ".*", $options: "i" },
+        };
+      }
+      const productos = await productosModel.paginate(queryFind, {
+        sort: { title: 1 },
+        populate: "categoria",
+        limit: req.query.limit || 2,
+        page: req.query.page || 1,
+      });
+      res.json(productos);
     } catch (error) {
       next(error);
     }
@@ -13,8 +32,8 @@ module.exports = {
   getById: async function (req, res, next) {
     try {
       const { id } = req.params;
-      const batido = await batidosModel.findById(id);
-      res.json(batido);
+      const producto = await productosModel.findById(id);
+      res.json(producto);
     } catch (error) {
       next(error);
     }
@@ -23,13 +42,13 @@ module.exports = {
     //Insertar en base
     console.log(req.body); //recibir lo enviado en el body del request
     try {
-      const batido = new batidosModel({
+      const producto = new productosModel({
         title: req.body.title,
         description: req.body.description,
         nutrientes: req.body.nutrientes,
         categoria: req.body.categoriaId,
       });
-      const documento = await batido.save();
+      const documento = await producto.save();
       res.json(documento);
     } catch (error) {
       console.log(error);
@@ -45,11 +64,11 @@ module.exports = {
     try {
       const { id } = req.params;
       const { title, description, nutrientes } = req.body;
-      const batido = await batidosModel.updateOne(
+      const producto = await productosModel.updateOne(
         { _id: id },
         { $set: { title, description, nutrientes } }
       );
-      res.json(batido);
+      res.json(producto);
     } catch (error) {
       next(error);
     }
@@ -59,8 +78,8 @@ module.exports = {
     console.log(req.params.id); //recibe parametros por url
     try {
       const { id } = req.params;
-      const batido = await batidosModel.deleteOne({ _id: id });
-      res.json(batido);
+      const producto = await productosModel.deleteOne({ _id: id });
+      res.json(producto);
     } catch (error) {
       next(error);
     }

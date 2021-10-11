@@ -6,8 +6,6 @@ const batidosControllers = require("../controllers/batidosControllers");
 //Obtener batidos
 router.get("/", batidosControllers.getAll);
 
-//Paginate
-router.get("/paginate", batidosControllers.getAllPaginate);
 //Obtener un batido por ID
 router.get("/:id", batidosControllers.getById);
 

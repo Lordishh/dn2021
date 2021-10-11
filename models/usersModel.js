@@ -1,6 +1,7 @@
 const mongoose = require("../bin/mongodb");
 const errorMessage = require("../util/errorMessage");
 const validators = require("../util/validators");
+const bcrypt = require("bcrypt");
 const userSchema = new mongoose.Schema({
   name: {
     type: String,
@@ -21,5 +22,9 @@ const userSchema = new mongoose.Schema({
       message: errorMessage.USERS.passwordIncorrecto,
     },
   },
+});
+userSchema.pre("save", function (next) {
+  this.password = bcrypt.hashSync(this.password, 10);
+  next();
 });
 module.exports = mongoose.model("users", userSchema);

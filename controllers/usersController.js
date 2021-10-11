@@ -1,4 +1,6 @@
 const usersModel = require("../models/usersModel");
+const bcrypt = require("bcrypt");
+const jwt = require("jsonwebtoken");
 
 module.exports = {
   create: async function (req, res, next) {
@@ -17,6 +19,21 @@ module.exports = {
   },
   login: async function (req, res, next) {
     try {
+      const user = await usersModel.findOne({ email: req.body.email });
+      if (!user) {
+        res.json({ message: "Email incorrecto" });
+        return;
+      }
+      if (bcrypt.compareSync(req.body.password, user.password)) {
+        const token = jwt.sign({ userId: user._id }, req.app.get("secretKey"), {
+          expiresIn: "1h",
+        });
+        res.json({ token: token });
+        return;
+      } else {
+        res.json({ message: "Contraseña incorrecta" });
+        return;
+      }
     } catch (error) {
       next(error);
     }

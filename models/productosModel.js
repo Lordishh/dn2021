@@ -1,7 +1,7 @@
 const mongoose = require("../bin/mongodb");
 const errorMessage = require("../util/errorMessage");
 
-const batidosSchema = new mongoose.Schema({
+const productoSchema = new mongoose.Schema({
   title: {
     type: String,
     required: [true, errorMessage.GENERAL.campo_requerido],
@@ -11,11 +11,12 @@ const batidosSchema = new mongoose.Schema({
     type: String,
     required: [true, errorMessage.GENERAL.campo_requerido],
   },
-  nutrientes: String,
+  price: Number,
   categoria: {
     type: mongoose.Schema.ObjectId,
     ref: "categorias",
   },
 });
 
-module.exports = mongoose.model("batidos", batidosSchema);
+productoSchema.plugin(mongoose.mongoosePaginate);
+module.exports = mongoose.model("producto", productoSchema);
